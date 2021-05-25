@@ -95,7 +95,7 @@ const testCases: ApiTestCase[] = [
 ];
 
 testCases.forEach((test, i) => {
-  Deno.test(`Position: ${i}`, () => {
+  Deno.test(`Position: ${i} failed`, () => {
     const userApi = new UserApi(test.users);
     const updated = userApi.update(test.input as UpdateUserRequest);
     if (!test.err && test.output) {
