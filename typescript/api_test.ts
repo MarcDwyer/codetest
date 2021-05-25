@@ -100,6 +100,7 @@ testCases.forEach((test, i) => {
     const updated = userApi.update(test.input as UpdateUserRequest);
     if (!test.err && test.output) {
       assertObjectMatch(test.output, updated as User);
+      assertObjectMatch(test.output, userApi.storage[0]);
     } else if (test.err) {
       assertEquals(test.err, updated);
     }
