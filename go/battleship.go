@@ -55,6 +55,8 @@ func NewGrid(ships []Position) *Grid {
 }
 func (grid *Grid) Shoot(shotNum int, shotLetter string) (ShootResult, error) {
 	//TODO: implement here
+	// x axis is alphabetical A-J
+	// y is numbers 1 - 10
 	return ShootResult{}, nil
 }
 

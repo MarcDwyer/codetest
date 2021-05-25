@@ -19,21 +19,31 @@ type UpdateUserRequest = {
   FullName?: string;
   Email?: string;
 };
+type UsersMap = Map<string, User>;
 
+function usersToMap(users: User[]) {
+  const usersMap: UsersMap = new Map();
+
+  for (const user of users) {
+    usersMap.set(user.Id, user);
+  }
+  return usersMap;
+}
 class UserApi {
-  constructor(public storage: User[]) {}
+  storage: UsersMap = new Map();
+  constructor(users: User[]) {
+    this.storage = usersToMap(users);
+  }
 
   update(request: UpdateUserRequest) {
-    const index = this.storage.findIndex((user) => user.Id === request.Id);
-    if (index === -1) {
+    const user = this.storage.get(request.Id);
+    if (!user) {
       return Error.UserNotFound;
     }
-    const user = this.storage[index];
     for (const [k, v] of Object.entries(request)) {
       //@ts-ignore
       user[k] = v;
     }
-
     return user;
   }
 }
@@ -100,7 +110,10 @@ testCases.forEach((test, i) => {
     const updated = userApi.update(test.input as UpdateUserRequest);
     if (!test.err && test.output) {
       assertObjectMatch(test.output, updated as User);
-      assertObjectMatch(test.output, userApi.storage[0]);
+      assertObjectMatch(
+        test.output,
+        userApi.storage.get(test.users[0].Id) as User
+      );
     } else if (test.err) {
       assertEquals(test.err, updated);
     }
