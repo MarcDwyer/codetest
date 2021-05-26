@@ -59,7 +59,23 @@ func (grid *Grid) Shoot(shotNum int, shotLetter string) (ShootResult, error) {
 	// y is numbers 1 - 10
 	return ShootResult{}, nil
 }
+func (s *ship) getSameXY() (x *rune, y *int){
+	if s.start.Letter == s.end.Letter {
+		return &s.start.Letter, nil
+	} else if s.start.Num == s.end.Num {
+		return nil, &s.start.Num
+	}
+	return nil, nil
+}
+func (s *ship) getAllCoords() map[string]int {
+	all := map[string]int{}
 
+	x, y := s.getSameXY()
+	if err != nil {
+
+	}
+	return all
+}
 func (grid *Grid) ResetShips() {
 	grid.Shots = 0
 }
@@ -151,8 +167,6 @@ func getShips() []Position {
 		End:   Coordinate{3, 'E'},
 	})
 	ships = append(ships, Position{
-		Start: Coordinate{1, 'H'},
-		End:   Coordinate{4, 'H'},
 	})
 	ships = append(ships, Position{
 		Start: Coordinate{5, 'B'},

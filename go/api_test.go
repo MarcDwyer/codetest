@@ -49,7 +49,7 @@ func (api *UserApi) Update(request UpdateUserRequest) (*User, error) {
 	for _, user := range api.storage {
 		if user.Id == request.Id {
 			for key, val := range structs.Map(request) {
-				if ok := (*user)[:key] != nil; ok {
+				if ok := user. != nil; ok {
 
 				}
 			}
