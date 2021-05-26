@@ -1,3 +1,7 @@
+import {
+  assertEquals,
+  assertObjectMatch,
+} from "https://deno.land/std@0.97.0/testing/asserts.ts";
 import { getShipCoords } from "./battleship_util.ts";
 
 export type Position = {
@@ -43,7 +47,8 @@ class Grid {
       coords.forEach(({ x, y }, index) => {
         if (x === shotLetter && y === shotNum) {
           // We've hit something
-          ship.hit(index);
+          result.sunk = ship.hit(index);
+          result.hit = true;
         }
       });
     }
@@ -65,6 +70,7 @@ class Ship {
     //TODO Check if ship has already been sunk here
     this.coords[index].hit = true;
     ++this.hits;
+    return this.isSunk;
   }
 }
 function getShips() {
@@ -180,21 +186,46 @@ const testCases: TestCase[] = [
   },
 ];
 
-// const ships = getShips();
-const ship = new Ship({ start: { y: 10, x: "D" }, end: { y: 10, x: "H" } });
-console.log(ship.coords);
+testCases.forEach((test, pi) => {
+  Deno.test(`Failure ${pi}`, () => {
+    const ships = getShips();
+    const grid = new Grid(ships);
 
-const ship1 = new Ship({
-  start: { y: 3, x: "E" },
-  end: { y: 3, x: "E" },
+    let isSunk = false;
+    test.shots.forEach((shot, si) => {
+      const res = grid.shoot(shot.num, shot.letter);
+      assertEquals(
+        shot.expectedHit,
+        res.hit,
+        `Error on ${pi} shot: ${si}. Result: ${JSON.stringify(res)}`
+      );
+      if (res.sunk) {
+        isSunk = res.sunk;
+        return;
+      }
+    });
+
+    assertEquals(test.expectedSunk, isSunk);
+  });
 });
-console.log(ship1.coords);
+const ships = getShips();
 
-const ship2 = new Ship({
-  start: { y: 7, x: "I" },
-  end: { y: 9, x: "I" },
-});
+const ship = ships[0];
 
-console.log(ship2.coords);
-
+const grid = new Grid(ships);
+// {
+//   start: { y: 2, x: "A" },
+//   end: { y: 2, x: "A" },
+// },
+// {
+//   // D = 4 H = 8
+//   start: { y: 10, x: "D" },
+//   end: { y: 10, x: "H" },
+// },
+console.log(grid.shoot(10, "D"));
+console.log(grid.shoot(10, "E"));
+console.log(grid.shoot(10, "F"));
+console.log(grid.shoot(10, "G"));
+console.log(grid.shoot(10, "H"));
+// Sunk ship
 export {};
