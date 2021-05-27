@@ -225,5 +225,8 @@ Deno.test(`Failure on 0 index testcase`, () => {
     `Expected sink ${test.expectedSunk} Got ${isSunk}`
   );
 });
+//TODO check if coordinates given are out of bounds and throw an error if they are
+// Although it is possible for TypeScript to only allow certain coordinates
+// such as y being 1-10 and x being A - J.
 
 export {};
