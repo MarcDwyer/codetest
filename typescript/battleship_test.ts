@@ -195,6 +195,7 @@ const testCases: TestCase[] = [
       // However there is a ship there that starts at I7 - I9
       // So it should be set to true
       { num: 8, letter: "I", expectedHit: true },
+      // TypeScript checks if letters are within range
       //@ts-ignore
       { num: 10, letter: "CC", expectedHit: false },
       { num: 10, letter: "G", expectedHit: true },
