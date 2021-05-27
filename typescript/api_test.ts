@@ -3,7 +3,7 @@ import {
   assertObjectMatch,
 } from "https://deno.land/std@0.97.0/testing/asserts.ts";
 
-export enum Error {
+export enum Errors {
   UserNotFound = "not_found",
   ErrNotImplemented = "not_implemented",
 }
@@ -30,7 +30,7 @@ function usersToMap(users: User[]) {
   return usersMap;
 }
 class UserApi {
-  storage: UsersMap = new Map();
+  storage: UsersMap;
   constructor(users: User[]) {
     this.storage = usersToMap(users);
   }
@@ -38,7 +38,7 @@ class UserApi {
   update(request: UpdateUserRequest) {
     const user = this.storage.get(request.Id);
     if (!user) {
-      return Error.UserNotFound;
+      return Errors.UserNotFound;
     }
     for (const [k, v] of Object.entries(request)) {
       //@ts-ignore
@@ -79,7 +79,7 @@ const testCases: ApiTestCase[] = [
       },
     ],
     input: { Id: "56781c", FullName: "Eric Fantastic" },
-    err: Error.UserNotFound,
+    err: Errors.UserNotFound,
   },
   {
     users: [
@@ -90,7 +90,7 @@ const testCases: ApiTestCase[] = [
       },
     ],
     input: { Id: "556f37", FullName: "Antony Uptown" },
-    err: Error.UserNotFound,
+    err: Errors.UserNotFound,
   },
   {
     users: [{ Id: "34d35", FullName: "Mickle Now", Email: "m.n@story.com" }],
@@ -100,7 +100,7 @@ const testCases: ApiTestCase[] = [
   {
     users: [],
     input: { Id: "34d35", FullName: "Nina Mitk", Email: "m.n@story.com" },
-    err: Error.UserNotFound,
+    err: Errors.UserNotFound,
   },
 ];
 
