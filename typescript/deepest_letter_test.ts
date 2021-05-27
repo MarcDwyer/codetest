@@ -39,8 +39,9 @@ const testCases = [
   { input: "a(b)c", expected: "b" },
   { input: "((a))(((M)))(c)(D)(e)(((f))(((G))))h(i)", expected: "g" },
   // c is epected however it is not properly closed by a paranthesis
-  //   { input: "((A)(b)c", expected: "c" },
-  //   { input: "(a)((G)c)", expected: "g" },
+  // this confuses me a little
+  { input: "((A)(b)((c)))", expected: "c" },
+  { input: "(a)((G)c)", expected: "g" },
   { input: "(8)", expected: "?" },
   { input: "(!)", expected: "?" },
 ];
