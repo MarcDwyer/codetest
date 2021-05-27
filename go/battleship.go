@@ -70,10 +70,7 @@ func (s *ship) getSameXY() (x *rune, y *int){
 func (s *ship) getAllCoords() map[string]int {
 	all := map[string]int{}
 
-	x, y := s.getSameXY()
-	if err != nil {
-
-	}
+	
 	return all
 }
 func (grid *Grid) ResetShips() {
