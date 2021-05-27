@@ -1,7 +1,4 @@
-import {
-  assertEquals,
-  assertObjectMatch,
-} from "https://deno.land/std@0.97.0/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.97.0/testing/asserts.ts";
 import { getShipCoords } from "./battleship_util.ts";
 
 export type Position = {
@@ -194,7 +191,10 @@ const testCases: TestCase[] = [
   {
     shots: [
       { num: 1, letter: "H", expectedHit: true },
-      { num: 8, letter: "I", expectedHit: false },
+      // This test case had expectedHit set to false
+      // However there is a ship there that starts at I7 - I9
+      // So it should be set to true
+      { num: 8, letter: "I", expectedHit: true },
       //@ts-ignore
       { num: 10, letter: "CC", expectedHit: false },
       { num: 10, letter: "G", expectedHit: true },
@@ -204,26 +204,28 @@ const testCases: TestCase[] = [
   },
 ];
 
-Deno.test(`Failure on 0 index testcase`, () => {
+testCases.forEach((test, pi) => {
   const ships = getShips();
   const grid = new Grid(ships);
 
-  let isSunk = false;
-  const test = testCases[4];
-  test.shots.forEach((shot, si) => {
-    const res = grid.shoot(shot.num, shot.letter);
-    assertEquals(
-      shot.expectedHit,
-      res.hit,
-      `Error on Shot: ${si}. Result: ${JSON.stringify(res)}`
-    );
-    isSunk = res.sunk;
+  Deno.test(`Test ${pi}`, () => {
+    let isSunk = false;
+
+    test.shots.forEach((shot, si) => {
+      const res = grid.shoot(shot.num, shot.letter);
+      assertEquals(
+        shot.expectedHit,
+        res.hit,
+        `Error on shot ${si} on test ${pi}`
+      );
+      if (res.sunk) {
+        isSunk = res.sunk;
+        return;
+      }
+    });
+
+    assertEquals(test.expectedSunk, isSunk, `Error on sunk ${pi}`);
   });
-  assertEquals(
-    test.expectedSunk,
-    isSunk,
-    `Expected sink ${test.expectedSunk} Got ${isSunk}`
-  );
 });
 //TODO check if coordinates given are out of bounds and throw an error if they are
 // Although it is possible for TypeScript to only allow certain coordinates
