@@ -29,10 +29,6 @@ class Grid {
   constructor(private ships: Ship[]) {}
 
   shoot(shotNum: number, shotLetter: X): ShootResult {
-    const result = {
-      hit: false,
-      sunk: false,
-    };
     // Search through ships to see if any of the coords match the shot
     for (const ship of this.ships) {
       const coords = ship.coords;
@@ -42,15 +38,12 @@ class Grid {
       if (shotNum !== first.y && shotLetter !== first.x) {
         continue;
       }
-      coords.forEach(({ x, y }, index) => {
-        if (x === shotLetter && y === shotNum) {
-          // We've hit something
-          result.sunk = ship.hit(index);
-          result.hit = true;
-        }
-      });
+      const [hit, isSunk] = ship.isHit(shotLetter, shotNum);
+      if (hit) {
+        return { hit, sunk: isSunk };
+      }
     }
-    return result;
+    return { hit: false, sunk: false };
   }
 }
 class Ship {
@@ -64,21 +57,23 @@ class Ship {
   constructor(private pos: Position) {
     this.coords = getShipCoords(pos);
   }
+  isHit(x: X, y: number): [hit: boolean, sunk: boolean] {
+    let hit = false;
+    for (const coord of this.coords) {
+      if (coord.x === x && y === coord.y) {
+        coord.hit = true;
+        hit = true;
+        ++this.hits;
+        break;
+      }
+    }
+    return [hit, this.isSunk];
+  }
   /**
    * if hits is equal to coords.length the ship is destroyed
    */
   get isSunk(): boolean {
     return this.hits === this.coords.length;
-  }
-  /**
-   *
-   * @param index Positon of the coordinate within the pos array
-   * @returns Whether the ship has been sunk or not
-   */
-  hit(index: number) {
-    this.coords[index].hit = true;
-    ++this.hits;
-    return this.isSunk;
   }
 }
 function getShips() {
@@ -231,5 +226,10 @@ testCases.forEach((test, pi) => {
 //TODO check if coordinates given are out of bounds and throw an error if they are
 // Although it is possible for TypeScript to only allow certain coordinates
 // such as y being 1-10 and x being A - J.
+const ships = getShips();
+const grid = new Grid(ships);
+
+// { num: 2, letter: "H", expectedHit: true },
+console.log(grid.shoot(2, "H"));
 
 export {};

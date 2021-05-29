@@ -59,19 +59,14 @@ func (grid *Grid) Shoot(shotNum int, shotLetter string) (ShootResult, error) {
 	// y is numbers 1 - 10
 	return ShootResult{}, nil
 }
-func (s *ship) getSameXY() (x *rune, y *int){
-	if s.start.Letter == s.end.Letter {
-		return &s.start.Letter, nil
-	} else if s.start.Num == s.end.Num {
-		return nil, &s.start.Num
-	}
-	return nil, nil
+func (s *ship) isHorizontal() bool {
+	start, end := s.start, s.end
+
+	return start.Letter == end.Letter
 }
 func (s *ship) getAllCoords() map[string]int {
-	all := map[string]int{}
-
+	var coords []Coordinate
 	
-	return all
 }
 func (grid *Grid) ResetShips() {
 	grid.Shots = 0

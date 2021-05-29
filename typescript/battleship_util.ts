@@ -20,10 +20,7 @@ export function isHorizontal(pos: Position): boolean {
   // If y same its horizontal else its vertical
   const { start, end } = pos;
 
-  if (start.y === end.y) {
-    return true;
-  }
-  return false;
+  return start.y === end.y;
 }
 
 export function getShipCoords(pos: Position): ShipCoords[] {

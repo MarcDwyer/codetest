@@ -42,6 +42,7 @@ const testCases = [
   // this confuses me a little
   { input: "((A)(b)((c)))", expected: "c" },
   { input: "(a)((G)c)", expected: "g" },
+  { input: "(z()a(b)((c))e(((f))))", expected: "f" },
   { input: "(8)", expected: "?" },
   { input: "(!)", expected: "?" },
 ];
