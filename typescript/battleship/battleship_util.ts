@@ -1,4 +1,4 @@
-import { Position, X, Coordinate } from "./battleship_test.ts";
+import { Position, X, Coordinate } from "./ships.ts";
 
 const alphas = "abcdefghij".toUpperCase();
 

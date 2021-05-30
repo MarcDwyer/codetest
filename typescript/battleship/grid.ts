@@ -1,5 +1,6 @@
-import { Coordinate, getShips, X, Errors } from "./battleship_test.ts";
+import { Errors } from "./battleship_test.ts";
 import { letterToNum } from "./battleship_util.ts";
+import { Coordinate, X, Ship } from "./ships.ts";
 
 export type Shot = {
   num: number;
@@ -65,19 +66,6 @@ function getBoard(coords: Coordinate[][]) {
   }
 
   return board;
-}
-
-export class Ship {
-  private hits: number = 0;
-  constructor(private coords: Coordinate[]) {}
-  /**
-   *
-   * @returns Whether the ship has sunk or not
-   */
-  hit() {
-    ++this.hits;
-    return this.hits === this.coords.length;
-  }
 }
 
 // shots: [
