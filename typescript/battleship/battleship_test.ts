@@ -1,82 +1,22 @@
 import { assertEquals } from "https://deno.land/std@0.97.0/testing/asserts.ts";
 import { getShipCoords } from "./battleship_util.ts";
+import { Grid, Shot } from "./grid.ts";
 
-export type Position = {
-  start: Coordinate;
-  end: Coordinate;
-};
-export type Coordinate = {
+export type PositionCoord = {
   y: number;
   x: X;
 };
-export interface ShipCoords extends Coordinate {
-  hit: boolean;
-}
+export type Position = {
+  start: PositionCoord;
+  end: PositionCoord;
+};
+export type Coordinate = {
+  y: number;
+  x: number;
+};
 export type X = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J";
 
-export type Shot = {
-  num: number;
-  letter: X;
-  expectedHit: boolean;
-};
-
-export type ShootResult = {
-  hit: boolean;
-  sunk: boolean;
-};
-
-class Grid {
-  constructor(private ships: Ship[]) {}
-
-  shoot(shotNum: number, shotLetter: X): ShootResult {
-    // Search through ships to see if any of the coords match the shot
-    for (const ship of this.ships) {
-      const coords = ship.coords;
-      const first = coords[0];
-      // one of the x or y coords need to match for the possibility of a shot hitting
-      // so we skip this check and continue looking at other ships
-      if (shotNum !== first.y && shotLetter !== first.x) {
-        continue;
-      }
-      const [hit, isSunk] = ship.isHit(shotLetter, shotNum);
-      if (hit) {
-        return { hit, sunk: isSunk };
-      }
-    }
-    return { hit: false, sunk: false };
-  }
-}
-class Ship {
-  hits: number = 0;
-
-  /**
-   * coords gives every single coordinate the ship is
-   * which allows me to easily check if a ship has been hit.
-   */
-  coords: ShipCoords[];
-  constructor(private pos: Position) {
-    this.coords = getShipCoords(pos);
-  }
-  isHit(x: X, y: number): [hit: boolean, sunk: boolean] {
-    let hit = false;
-    for (const coord of this.coords) {
-      if (coord.x === x && y === coord.y) {
-        coord.hit = true;
-        hit = true;
-        ++this.hits;
-        break;
-      }
-    }
-    return [hit, this.isSunk];
-  }
-  /**
-   * if hits is equal to coords.length the ship is destroyed
-   */
-  get isSunk(): boolean {
-    return this.hits === this.coords.length;
-  }
-}
-function getShips() {
+export function getShips() {
   // count  name              size
   //   1    Aircraft Carrier   5
   //   1    Battleship         4
@@ -96,9 +36,7 @@ function getShips() {
   //		9                   @
   //	 10       @ @ @ @ @
   //
-  // Having trouble finding the ship that starts at
-  // x: H, y: 1 with the ships provided.
-  // I might be misunderstanding the positions as well.
+
   const positions: Position[] = [
     {
       start: { y: 2, x: "A" },
@@ -131,23 +69,25 @@ function getShips() {
     },
   ];
 
-  const ships: Ship[] = [];
+  const coords: Coordinate[][] = [];
 
   for (const pos of positions) {
-    ships.push(new Ship(pos));
+    coords.push(getShipCoords(pos));
   }
-  return ships;
+  return coords;
 }
 
-enum Errors {
+export enum Errors {
   ErrOutOfGridBoundaries = "outofbounds",
   ErrIncorrectLetter = "incorrectletter",
 }
+
 type TestCase = {
   shots: Shot[];
   expectedSunk: boolean;
   err?: string;
 };
+
 const testCases: TestCase[] = [
   {
     shots: [
@@ -202,34 +142,23 @@ const testCases: TestCase[] = [
 
 testCases.forEach((test, pi) => {
   const ships = getShips();
+
   const grid = new Grid(ships);
 
   Deno.test(`Test ${pi}`, () => {
-    let isSunk = false;
-
     test.shots.forEach((shot, si) => {
-      const res = grid.shoot(shot.num, shot.letter);
-      assertEquals(
-        shot.expectedHit,
-        res.hit,
-        `Error on shot ${si} on test ${pi}`
-      );
-      if (res.sunk) {
-        isSunk = res.sunk;
-        return;
+      try {
+        const testShot = grid.shoot(shot.num, shot.letter);
+        assertEquals(shot.expectedHit, testShot.hit);
+        if (testShot.sunk) {
+          assertEquals(test.expectedSunk, testShot.sunk);
+          return;
+        }
+      } catch (e) {
+        if (test.err) {
+          assertEquals(test.err, e, `Improper error ${si}: ${e}`);
+        }
       }
     });
-
-    assertEquals(test.expectedSunk, isSunk, `Error on sunk ${pi}`);
   });
 });
-//TODO check if coordinates given are out of bounds and throw an error if they are
-// Although it is possible for TypeScript to only allow certain coordinates
-// such as y being 1-10 and x being A - J.
-const ships = getShips();
-const grid = new Grid(ships);
-
-// { num: 2, letter: "H", expectedHit: true },
-console.log(grid.shoot(2, "H"));
-
-export {};

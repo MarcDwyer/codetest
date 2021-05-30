@@ -1,4 +1,4 @@
-import { Position, X, Coordinate, ShipCoords } from "./battleship_test.ts";
+import { Position, X, Coordinate } from "./battleship_test.ts";
 
 const alphas = "abcdefghij".toUpperCase();
 
@@ -23,7 +23,7 @@ export function isHorizontal(pos: Position): boolean {
   return start.y === end.y;
 }
 
-export function getShipCoords(pos: Position): ShipCoords[] {
+export function getShipCoords(pos: Position): Coordinate[] {
   const coords: Coordinate[] = [];
   const { start, end } = pos;
   const isHoriz = isHorizontal(pos);
@@ -38,20 +38,17 @@ export function getShipCoords(pos: Position): ShipCoords[] {
     let alphaPos = startX;
 
     for (let x = 0; x < difference; x++) {
-      const letter = numToLetter(alphaPos);
-      coords.push({ y: start.y, x: letter });
+      coords.push({ y: start.y - 1, x: alphaPos });
       ++alphaPos;
     }
   } else {
     difference += end.y - start.y;
-    let yCoord = start.y;
+    let yCoord = start.y - 1;
     for (let i = 0; i < difference; i++) {
-      coords.push({ x: start.x, y: yCoord });
+      coords.push({ x: letterToNum(start.x), y: yCoord });
       ++yCoord;
     }
   }
-  const shipCoords: ShipCoords[] = coords.map((coord) => {
-    return { ...coord, hit: false };
-  });
-  return shipCoords;
+
+  return coords;
 }
