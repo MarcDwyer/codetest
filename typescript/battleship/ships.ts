@@ -32,17 +32,22 @@ export class Ship {
   constructor(coords: Coordinate[]) {
     this.shipCoords = toShipCoords(coords);
   }
+  get isSunk() {
+    return this.hits === this.shipCoords.length;
+  }
   /**
    *
    * @returns Whether the ship has sunk or not
    */
   hit(x: number, y: number) {
+    const sunk = this.isSunk;
+    if (sunk) throw Errors.ErrAlreadySunk;
     const coord = this.searchCoord(x, y);
     if (!coord) throw Errors.ErrNoCoord;
     if (coord.hit) throw Errors.ErrAlreadyHit;
     coord.hit = true;
     ++this.hits;
-    return this.hits === this.shipCoords.length;
+    return this.isSunk;
   }
 
   private searchCoord(x: number, y: number) {

@@ -7,6 +7,7 @@ export enum Errors {
   ErrIncorrectLetter = "incorrectletter",
   ErrNoCoord = "no coordinate found",
   ErrAlreadyHit = "already hit coordinate",
+  ErrAlreadySunk = "Ship has already been sunk",
 }
 
 type TestCase = {
