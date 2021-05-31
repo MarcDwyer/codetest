@@ -5,6 +5,8 @@ import { getShips } from "./ships.ts";
 export enum Errors {
   ErrOutOfGridBoundaries = "outofbounds",
   ErrIncorrectLetter = "incorrectletter",
+  ErrNoCoord = "no coordinate found",
+  ErrAlreadyHit = "already hit coordinate",
 }
 
 type TestCase = {

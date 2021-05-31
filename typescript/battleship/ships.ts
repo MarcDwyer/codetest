@@ -1,3 +1,4 @@
+import { Errors } from "./battleship_test.ts";
 import { getShipCoords } from "./battleship_util.ts";
 
 export type PositionCoord = {
@@ -12,18 +13,45 @@ export type Coordinate = {
   y: number;
   x: number;
 };
+export interface ShipCoord extends Coordinate {
+  hit: boolean;
+}
 export type X = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J";
 
+function toShipCoords(coords: Coordinate[]): ShipCoord[] {
+  return coords.map((coord) => {
+    return {
+      ...coord,
+      hit: false,
+    };
+  });
+}
 export class Ship {
   private hits: number = 0;
-  constructor(private coords: Coordinate[]) {}
+  private shipCoords: ShipCoord[];
+  constructor(coords: Coordinate[]) {
+    this.shipCoords = toShipCoords(coords);
+  }
   /**
    *
    * @returns Whether the ship has sunk or not
    */
-  hit() {
+  hit(x: number, y: number) {
+    const coord = this.searchCoord(x, y);
+    if (!coord) throw Errors.ErrNoCoord;
+    if (coord.hit) throw Errors.ErrAlreadyHit;
+    coord.hit = true;
     ++this.hits;
-    return this.hits === this.coords.length;
+    return this.hits === this.shipCoords.length;
+  }
+
+  private searchCoord(x: number, y: number) {
+    for (const coord of this.shipCoords) {
+      if (coord.x === x && coord.y === y) {
+        return coord;
+      }
+    }
+    return null;
   }
 }
 export function getShips() {

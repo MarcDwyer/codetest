@@ -38,7 +38,7 @@ export class Grid {
 
     if (!xAxis) throw Errors.ErrOutOfGridBoundaries;
     if (xAxis instanceof Ship) {
-      const isSunk = xAxis.hit();
+      const isSunk = xAxis.hit(x, y);
       return { hit: true, sunk: isSunk };
     } else {
       return { hit: false, sunk: false };
